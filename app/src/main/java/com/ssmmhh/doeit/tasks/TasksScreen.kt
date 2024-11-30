@@ -1,11 +1,8 @@
 package com.ssmmhh.doeit.tasks
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,10 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -25,17 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.UiMode
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ssmmhh.doeit.R
@@ -44,42 +40,59 @@ import com.ssmmhh.doeit.ui.theme.DoeitTheme
 
 
 @Composable
-fun TaskScreen(
+fun TasksScreen(
     modifier: Modifier = Modifier,
     tasksViewModel: TasksViewModel = viewModel(),
 ) {
     val todayTasks by tasksViewModel.todayTask.collectAsState()
-    TaskScreen(todayTasks, modifier)
+    TasksScreen(todayTasks, modifier)
 }
 
 @Composable
-private fun TaskScreen(
+private fun TasksScreen(
     todayTasks: List<Task>,
+    modifier: Modifier = Modifier,
+    onClickOnAddTask: () -> Unit = {}
+) {
+    Scaffold(
+        modifier = modifier.fillMaxWidth(),
+        floatingActionButton = {
+            FloatingActionButton(onClick = onClickOnAddTask) {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add task")
+            }
+        },
+        topBar = {
+            Text(
+                text = stringResource(R.string.today),
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 80.dp),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+        }
+    ) { padding ->
+        TaskListContent(
+            tasks = todayTasks,
+            modifier = Modifier.padding(padding)
+        )
+    }
+}
+
+@Composable
+fun TaskListContent(
+    tasks: List<Task>,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    val tasksToShow = remember(tasks) { orderByComplete(tasks) }
+    LazyColumn(
         modifier = modifier
-            .padding(top = 24.dp)
+            .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(R.string.today),
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        val tasksToShow = remember(todayTasks) { orderByComplete(todayTasks) }
-        LazyColumn(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            items(tasksToShow) {
-                TaskItem(it, {})
-                Spacer(Modifier.height(16.dp))
-            }
+        items(tasksToShow) {
+            TaskItem(it, {})
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
@@ -100,6 +113,7 @@ fun TaskItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         shape = RoundedCornerShape(16.0.dp),
+        modifier = modifier
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -129,10 +143,9 @@ fun TaskItem(
 @Composable
 fun TaskScreenWithTaskPreview() {
     DoeitTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            TaskScreen(
+        Surface(modifier = Modifier.fillMaxSize()) {
+            TasksScreen(
                 todayTasks = mockTasks,
-                modifier = Modifier.padding(innerPadding)
             )
         }
     }
@@ -147,10 +160,9 @@ fun TaskScreenWithTaskPreview() {
 @Composable
 fun TaskScreenWithTaskPreviewDarkMode() {
     DoeitTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            TaskScreen(
+        Surface(modifier = Modifier.fillMaxSize()) {
+            TasksScreen(
                 todayTasks = mockTasks,
-                modifier = Modifier.padding(innerPadding)
             )
         }
     }
