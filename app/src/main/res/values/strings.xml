@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Doeit</string>
     <string name="today">Today</string>
+    <string name="task_detail">Task Detail</string>
 </resources>
