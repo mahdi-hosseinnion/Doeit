@@ -1,6 +1,8 @@
 package com.ssmmhh.doeit.tasks
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -87,12 +90,14 @@ fun TaskListContent(
     val tasksToShow = remember(tasks) { orderByComplete(tasks) }
     LazyColumn(
         modifier = modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
+        ,
+        contentPadding = PaddingValues(vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(tasksToShow) {
             TaskItem(it, {})
-            Spacer(Modifier.height(16.dp))
         }
     }
 }
