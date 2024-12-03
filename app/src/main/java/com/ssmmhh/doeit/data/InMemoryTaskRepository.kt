@@ -16,4 +16,7 @@ class InMemoryTaskRepository : TaskRepository {
         return tasks
     }
 
+    override suspend fun getTaskById(taskId: String): Task? {
+        return tasks.value.firstOrNull { it.id == taskId }
+    }
 }
