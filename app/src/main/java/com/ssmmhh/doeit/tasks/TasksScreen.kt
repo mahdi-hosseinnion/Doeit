@@ -1,13 +1,12 @@
 package com.ssmmhh.doeit.tasks
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,30 +35,37 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.ssmmhh.doeit.R
+import com.ssmmhh.doeit.TaskDetail
 import com.ssmmhh.doeit.data.Task
 import com.ssmmhh.doeit.ui.theme.DoeitTheme
 
 
 @Composable
 fun TasksScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     tasksViewModel: TasksViewModel = viewModel(),
 ) {
     val todayTasks by tasksViewModel.todayTask.collectAsState()
-    TasksScreen(todayTasks, modifier)
+
+    TasksScreen(
+        todayTasks = todayTasks,
+        modifier = modifier,
+        onClickOnTask = { task -> navController.navigate(route = TaskDetail(task.id)) })
 }
 
 @Composable
 private fun TasksScreen(
     todayTasks: List<Task>,
     modifier: Modifier = Modifier,
-    onClickOnAddTask: () -> Unit = {}
+    onClickOnTask: (Task) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxWidth(),
         floatingActionButton = {
-            FloatingActionButton(onClick = onClickOnAddTask) {
+            FloatingActionButton(onClick = { }) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add task")
             }
         },
@@ -77,7 +82,8 @@ private fun TasksScreen(
     ) { padding ->
         TaskListContent(
             tasks = todayTasks,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(padding),
+            onClickOnTask = onClickOnTask
         )
     }
 }
@@ -85,19 +91,19 @@ private fun TasksScreen(
 @Composable
 fun TaskListContent(
     tasks: List<Task>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickOnTask: (Task) -> Unit = {}
 ) {
     val tasksToShow = remember(tasks) { orderByComplete(tasks) }
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-        ,
+            .fillMaxWidth(),
         contentPadding = PaddingValues(vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(tasksToShow) {
-            TaskItem(it, {})
+            TaskItem(it, {}, onClick = onClickOnTask)
         }
     }
 }
@@ -111,6 +117,7 @@ fun orderByComplete(todayTasks: List<Task>): List<Task> {
 fun TaskItem(
     task: Task,
     onToggleCompleted: (Boolean) -> Unit,
+    onClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -118,7 +125,7 @@ fun TaskItem(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ),
         shape = RoundedCornerShape(16.0.dp),
-        modifier = modifier
+        modifier = modifier.clickable { onClick(task) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -183,7 +190,7 @@ fun TaskItemPreview() {
                     title = "Wash the dishes",
                     isCompleted = true
                 ),
-                {}
+                {}, {}
             )
         }
     }

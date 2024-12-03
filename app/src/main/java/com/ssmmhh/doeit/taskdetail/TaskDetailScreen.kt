@@ -18,21 +18,26 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.ssmmhh.doeit.R
 import com.ssmmhh.doeit.data.Task
+import com.ssmmhh.doeit.data.TaskId
 import com.ssmmhh.doeit.tasks.TasksViewModel
 import com.ssmmhh.doeit.tasks.mockTasks
 import com.ssmmhh.doeit.ui.theme.DoeitTheme
 
 @Composable
 fun TaskDetailScreen(
+    navController: NavHostController,
+    taskId: TaskId,
     modifier: Modifier = Modifier,
     tasksViewModel: TasksViewModel = viewModel(),
 ) {
+    TaskDetailScreen(Task("FAKE ONE").copy(id = taskId), modifier)
 }
 
 @Composable
-fun TaskDetailScreen(
+private fun TaskDetailScreen(
     task: Task,
     modifier: Modifier = Modifier,
     onClickOnSave: () -> Unit = {}
@@ -40,7 +45,7 @@ fun TaskDetailScreen(
     Scaffold(
         topBar = {
             Text(
-                stringResource(R.string.task_detail),
+                stringResource(R.string.task_detail) + " - " + task.id.value.take(10),
                 modifier = Modifier.padding(top = 80.dp)
             )
         },
