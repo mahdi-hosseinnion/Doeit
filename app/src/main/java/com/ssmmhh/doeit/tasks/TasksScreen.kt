@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.ssmmhh.doeit.QuickAdd
 import com.ssmmhh.doeit.R
 import com.ssmmhh.doeit.TaskDetail
 import com.ssmmhh.doeit.data.Task
@@ -53,6 +54,7 @@ fun TasksScreen(
     TasksScreen(
         todayTasks = todayTasks,
         modifier = modifier,
+        addTask = { navController.navigate(route = QuickAdd) },
         onClickOnTask = { task -> navController.navigate(route = TaskDetail(task.id)) })
 }
 
@@ -60,12 +62,13 @@ fun TasksScreen(
 private fun TasksScreen(
     todayTasks: List<Task>,
     modifier: Modifier = Modifier,
+    addTask: () -> Unit = {},
     onClickOnTask: (Task) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxWidth(),
         floatingActionButton = {
-            FloatingActionButton(onClick = { }) {
+            FloatingActionButton(onClick = addTask) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add task")
             }
         },
