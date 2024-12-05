@@ -7,4 +7,6 @@ interface TaskRepository {
     fun fetchTodayTasks(): Flow<List<Task>>
 
     suspend fun getTaskById(taskId: String): Task?
+
+    suspend fun addTask(task: Task)
 }
