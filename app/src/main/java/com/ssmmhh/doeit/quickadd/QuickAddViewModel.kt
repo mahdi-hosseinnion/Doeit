@@ -23,8 +23,11 @@ class QuickAddViewModel(
     fun onClickOnSave() {
         viewModelScope.launch {
             val title = taskTitle.value
+            if (title.isBlank()) return@launch
             val task = Task(title = title)
             taskRepository.addTask(task)
+            //Clear out the task title to get ready for new task
+            onTaskTitleChanged(title = "")
         }
     }
 }
