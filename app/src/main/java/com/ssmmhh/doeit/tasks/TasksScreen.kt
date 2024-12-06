@@ -55,7 +55,9 @@ fun TasksScreen(
         todayTasks = todayTasks,
         modifier = modifier,
         addTask = { navController.navigate(route = QuickAdd) },
-        onClickOnTask = { task -> navController.navigate(route = TaskDetail(task.id)) })
+        onClickOnTask = { task -> navController.navigate(route = TaskDetail(task.id)) },
+        toggleTaskIsComplete = tasksViewModel::toggleTaskIsComplete
+    )
 }
 
 @Composable
@@ -63,7 +65,8 @@ private fun TasksScreen(
     todayTasks: List<Task>,
     modifier: Modifier = Modifier,
     addTask: () -> Unit = {},
-    onClickOnTask: (Task) -> Unit = {}
+    onClickOnTask: (Task) -> Unit = {},
+    toggleTaskIsComplete: (Task) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxWidth(),
@@ -86,7 +89,8 @@ private fun TasksScreen(
         TaskListContent(
             tasks = todayTasks,
             modifier = Modifier.padding(padding),
-            onClickOnTask = onClickOnTask
+            onClickOnTask = onClickOnTask,
+            toggleTaskIsComplete = toggleTaskIsComplete,
         )
     }
 }
@@ -95,9 +99,10 @@ private fun TasksScreen(
 fun TaskListContent(
     tasks: List<Task>,
     modifier: Modifier = Modifier,
-    onClickOnTask: (Task) -> Unit = {}
+    onClickOnTask: (Task) -> Unit = {},
+    toggleTaskIsComplete: (Task) -> Unit = {},
 ) {
-    val tasksToShow = remember(tasks) { orderByComplete(tasks) }
+    val tasksToShow = remember(tasks) { orderTasks(tasks) }
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -105,21 +110,28 @@ fun TaskListContent(
         contentPadding = PaddingValues(vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(tasksToShow) {
-            TaskItem(it, {}, onClick = onClickOnTask)
+        items(tasksToShow, key = { it.id }) {
+            TaskItem(
+                task = it,
+                onToggleCompleted = toggleTaskIsComplete,
+                onClick = onClickOnTask,
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }
 
-fun orderByComplete(todayTasks: List<Task>): List<Task> {
-    val (completedTasks, remainingTasks) = todayTasks.partition { it.isCompleted }
-    return remainingTasks + completedTasks
+fun orderTasks(todayTasks: List<Task>): List<Task> {
+    return todayTasks.sortedWith(
+        compareBy<Task> { it.isCompleted }
+            .thenByDescending { it.createdAt }
+    )
 }
 
 @Composable
 fun TaskItem(
     task: Task,
-    onToggleCompleted: (Boolean) -> Unit,
+    onToggleCompleted: (Task) -> Unit,
     onClick: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -138,7 +150,7 @@ fun TaskItem(
         ) {
             Checkbox(
                 checked = task.isCompleted,
-                onCheckedChange = onToggleCompleted
+                onCheckedChange = { onToggleCompleted(task) }
             )
             Text(
                 text = task.title,

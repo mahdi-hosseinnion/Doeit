@@ -9,4 +9,6 @@ interface TaskRepository {
     suspend fun getTaskById(taskId: String): Task?
 
     suspend fun addTask(task: Task)
+
+    suspend fun toggleTaskIsComplete(task: Task)
 }

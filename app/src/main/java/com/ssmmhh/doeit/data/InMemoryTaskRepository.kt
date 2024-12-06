@@ -28,4 +28,15 @@ class InMemoryTaskRepository : TaskRepository {
             }
         }
     }
+
+    override suspend fun toggleTaskIsComplete(task: Task) {
+        tasks.update { tasksList ->
+            val newTask = task.copy(isCompleted = !task.isCompleted)
+            val taskIndex = tasksList.indexOfFirst { it.id == task.id }
+            if (taskIndex < 0) return@update tasksList
+            tasksList.toMutableList().apply {
+                set(taskIndex, newTask)
+            }
+        }
+    }
 }

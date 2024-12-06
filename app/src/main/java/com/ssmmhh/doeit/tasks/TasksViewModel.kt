@@ -8,6 +8,7 @@ import com.ssmmhh.doeit.data.TaskRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class TasksViewModel : ViewModel() {
 
@@ -20,4 +21,9 @@ class TasksViewModel : ViewModel() {
             initialValue = listOf()
         )
 
+    fun toggleTaskIsComplete(task: Task) {
+        viewModelScope.launch {
+            taskRepository.toggleTaskIsComplete(task)
+        }
+    }
 }
