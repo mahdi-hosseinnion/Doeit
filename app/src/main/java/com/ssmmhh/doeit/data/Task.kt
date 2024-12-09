@@ -8,5 +8,6 @@ data class Task(
     val isCompleted: Boolean = false,
     val note: String = "",
     val id: String = UUID.randomUUID().toString(),
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
+    val dueDate: Instant? = null
 )
