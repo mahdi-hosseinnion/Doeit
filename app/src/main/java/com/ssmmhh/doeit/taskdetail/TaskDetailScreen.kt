@@ -2,26 +2,32 @@ package com.ssmmhh.doeit.taskdetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.ssmmhh.doeit.R
 import com.ssmmhh.doeit.data.Task
 import com.ssmmhh.doeit.tasks.mockTasks
 import com.ssmmhh.doeit.ui.theme.DoeitTheme
@@ -34,22 +40,34 @@ fun TaskDetailScreen(
 ) {
     val task by taskDetailViewModel.task.collectAsStateWithLifecycle()
     task?.let {
-        TaskDetailScreen(task = it, modifier)
+        TaskDetailScreen(task = it, modifier = modifier, navigateBack = navController::navigateUp)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskDetailScreen(
     task: Task,
     modifier: Modifier = Modifier,
-    onClickOnSave: () -> Unit = {}
+    onClickOnSave: () -> Unit = {},
+    navigateBack: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
-            Text(
-                stringResource(R.string.task_detail) + " - " + task.id.take(10),
-                modifier = Modifier.padding(top = 80.dp)
-            )
+            TopAppBar(
+                title = {
+
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = navigateBack
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "navigate back",
+                        )
+                    }
+                })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onClickOnSave) {
@@ -81,8 +99,16 @@ fun TaskTitleSection(
     TextField(
         value = task.title,
         onValueChange = {},
+        colors = TextFieldDefaults.colors().copy(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.surface
+        ),
         placeholder = { Text("Task title") },
         modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     )
 }
 
@@ -91,13 +117,27 @@ fun TaskNoteSection(
     task: Task,
     modifier: Modifier = Modifier
 ) {
-    TextField(
-        value = task.title,
-        onValueChange = {},
-        placeholder = { Text("note") },
-        minLines = 5,
+    Card(
+        shape = MaterialTheme.shapes.extraSmall,
         modifier = modifier
-    )
+            .padding(8.dp)
+            .padding(top = 8.dp)
+    ) {
+        TextField(
+            value = task.title,
+            onValueChange = {},
+            placeholder = { Text("Add a note") },
+            minLines = 4,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.colors().copy(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                focusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerLow
+            ),
+        )
+    }
 }
 
 
