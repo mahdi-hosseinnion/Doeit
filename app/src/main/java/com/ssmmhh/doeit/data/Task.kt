@@ -1,5 +1,6 @@
 package com.ssmmhh.doeit.data
 
+import android.icu.util.LocaleData
 import java.time.Instant
 import java.util.UUID
 
@@ -9,5 +10,5 @@ data class Task(
     val note: String = "",
     val id: String = UUID.randomUUID().toString(),
     val createdAt: Instant = Instant.now(),
-    val dueDate: Instant? = null
+    val dueDate: LocaleData? = null
 )

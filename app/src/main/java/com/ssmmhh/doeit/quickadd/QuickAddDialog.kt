@@ -10,7 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -109,8 +111,8 @@ private fun QuickAddDialog(
 
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Done,
-                    contentDescription = "Add the task",
+                    imageVector = Icons.AutoMirrored.Rounded.Send,
+                    contentDescription = "Add a task",
                     modifier = Modifier.size(32.dp)
                 )
             }
